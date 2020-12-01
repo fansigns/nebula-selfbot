@@ -189,8 +189,8 @@ async def invitespoof(ctx, link1, link2):
 async def locate(ctx, ip: str):
     await ctx.message.delete()   
     r = requests.get(url=f"http://ip-api.com/json/{ip}")
-    hostname = requests.get(f"https://api.c99.nl/gethostname?key=MZFG2-EOVK4-TCAB0-4UXP9&host={ip}").text.replace("<br>", "\n")
-    vpn = requests.get(f"https://api.c99.nl/proxydetector?key=MZFG2-EOVK4-TCAB0-4UXP9&ip={ip}").text.replace("<br>", "\n")
+    hostname = requests.get(f"https://api.c99.nl/gethostname?key=&host={ip}").text.replace("<br>", "\n")
+    vpn = requests.get(f"https://api.c99.nl/proxydetector?key=&ip={ip}").text.replace("<br>", "\n")
     if r.status_code == 200:
         if(r.json()['status'] == "fail"):
             await ctx.send(f"{ip} is an **invalid** IP Address")
@@ -282,39 +282,7 @@ async def chnick(ctx, member: discord.Member, nick):
    #       print("")
 
 #          os.system("curl "+sites+"/mailman/listinfo/mailman -s | findstr POST")
-
-@client.command()
-async def webhook(ctx, webhook):
-    await ctx.message.delete()
-    try:
-        statuscode1 = requests.get(f"{webhook}").status_code
-        if statuscode1 ==404:
-            embed=discord.Embed(title="**Invalid Webhook!**",color=0xbb2024)
-            await ctx.send(embed=embed,delete_after=10)
-
-        elif statuscode1 ==200:
-            info = requests.get(f"{webhook}")
-            WebName = info.json()['name']
-            WebChannelID = info.json()['channel_id']
-            WebGuildID = info.json()['guild_id']
-            WebID = info.json()['id']
-            Avatar = info.json()['avatar']
-            requests.delete(f"{webhook}")
-            statuscode = requests.get(f"{webhook}").status_code
-            if statuscode ==200:
-                embed=discord.Embed(title="**Error!**",color=0xbb2024)
-                await ctx.send(embed=embed,delete_after=10)
-
-            else:
-                embed=discord.Embed(title="__**Deleted!**__",color=0xbf00ff)
-                embed.add_field(name="**Name**", value=f"{WebName}", inline=True)
-                embed.add_field(name="**Channel ID**", value=f"{WebChannelID}", inline=True)
-                embed.add_field(name="**Server ID**", value=f"{WebGuildID}", inline=False)
-                embed.set_image(url=f"https://cdn.discordapp.com/avatars/{WebID}/{Avatar}")                          
-                await ctx.send(embed=embed,delete_after=10)
-
-    except:
-        print(f"{Style.BRIGHT}{Fore.WHITE}[{Style.BRIGHT}{Fore.MAGENTA}!]{Fore.WHITE} Invalid Webhook")     
+ 
      
 @client.command()
 async def reload(ctx):
@@ -385,7 +353,7 @@ async def game(ctx, *, message):
 @client.command()
 async def phonelookup(ctx, phone):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/phonelookup?key=MZFG2-EOVK4-TCAB0-4UXP9&number={phone}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/phonelookup?key=&number={phone}").text.replace("<br>", "\n")
     embed=discord.Embed(title=f" **Info On {phone}** ", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -408,7 +376,7 @@ async def backup(ctx):
 @client.command()
 async def ping(ctx, site):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/upordown?key=MZFG2-EOVK4-TCAB0-4UXP9&host={site}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/upordown?key=&host={site}").text.replace("<br>", "\n")
     embed=discord.Embed(title=f" **Up or Down?** ", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -439,7 +407,7 @@ async def ldap(ctx, target, port, duration):
 @client.command()
 async def portscan(ctx, ipadd: str):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/portscanner?key=MZFG2-EOVK4-TCAB0-4UXP9&host={ipadd}").text
+    r = requests.get(f"https://api.c99.nl/portscanner?key=&host={ipadd}").text
     embed = discord.Embed(title=f" **Port Scan For {ipadd}** ", color=0xbf00ff)
     embed.add_field(name="Open Ports: ", value=f"{r}", inline=False)
     await ctx.send(embed=embed,delete_after=10)
@@ -448,7 +416,7 @@ async def portscan(ctx, ipadd: str):
 @client.command()
 async def spanish(ctx,*, text):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/translate?key=MZFG2-EOVK4-TCAB0-4UXP9&text={text}&tolanguage=ES").text
+    r = requests.get(f"https://api.c99.nl/translate?key=&text={text}&tolanguage=ES").text
     embed = discord.Embed(title="**Spanish Text**", description=f"**{r}**", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -456,7 +424,7 @@ async def spanish(ctx,*, text):
 @client.command()
 async def russian(ctx,*, text):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/translate?key=MZFG2-EOVK4-TCAB0-4UXP9&text={text}&tolanguage=RU").text
+    r = requests.get(f"https://api.c99.nl/translate?key=&text={text}&tolanguage=RU").text
     embed = discord.Embed(title="**Russian Text**", description=f"**{r}**", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -464,7 +432,7 @@ async def russian(ctx,*, text):
 @client.command()
 async def subscan(ctx, text):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/subdomainfinder?key=MZFG2-EOVK4-TCAB0-4UXP9&domain={text}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/subdomainfinder?key=&domain={text}").text.replace("<br>", "\n")
     embed = discord.Embed(title=f"**Subdomain Scan for {text}**", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -472,7 +440,7 @@ async def subscan(ctx, text):
 @client.command()
 async def headers(ctx, text):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/getheaders?key=MZFG2-EOVK4-TCAB0-4UXP9&host={text}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/getheaders?key=&host={text}").text.replace("<br>", "\n")
     embed = discord.Embed(title=f"**Headers for {text}**", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -480,7 +448,7 @@ async def headers(ctx, text):
 @client.command()
 async def torcheck(ctx, text):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/ipvalidator?key=MZFG2-EOVK4-TCAB0-4UXP9&ip={text}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/ipvalidator?key=&ip={text}").text.replace("<br>", "\n")
     embed = discord.Embed(title=f"**Tor Check for {text}**", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -488,7 +456,7 @@ async def torcheck(ctx, text):
 @client.command()
 async def firewall(ctx, text):
     await ctx.message.delete() 
-    r = requests.get(f"https://api.c99.nl/firewalldetector?key=MZFG2-EOVK4-TCAB0-4UXP9&url={text}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/firewalldetector?key=&url={text}").text.replace("<br>", "\n")
     embed = discord.Embed(title=f"**Firewall Scan for {text}**", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -496,7 +464,7 @@ async def firewall(ctx, text):
 @client.command()
 async def dictionary(ctx, text):
     await ctx.message.delete() 
-    r = requests.get(f"https://api.c99.nl/dictionary?key=MZFG2-EOVK4-TCAB0-4UXP9&word={text}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/dictionary?key=&word={text}").text.replace("<br>", "\n")
     embed = discord.Embed(title=f"**Word lookup for {text}**", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -504,7 +472,7 @@ async def dictionary(ctx, text):
 @client.command()
 async def yt2mp3(ctx, text):
     await ctx.message.delete() 
-    r = requests.get(f"https://api.c99.nl/youtubemp3?key=MZFG2-EOVK4-TCAB0-4UXP9&videoid={text}").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/youtubemp3?key=&videoid={text}").text.replace("<br>", "\n")
     embed = discord.Embed(title=f"**YT 2 MP3**", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -512,7 +480,7 @@ async def yt2mp3(ctx, text):
 @client.command()
 async def passgen(ctx, text):
     await ctx.message.delete() 
-    r = requests.get(f"https://api.c99.nl/passwordgenerator?key=MZFG2-EOVK4-TCAB0-4UXP9&length={text}&include=numbers,letters,chars&customlist=abcdefghijklmnopqrstuvwyxyz12345678910!@#$%^&*()").text.replace("<br>", "\n")
+    r = requests.get(f"https://api.c99.nl/passwordgenerator?key=&length={text}&include=numbers,letters,chars&customlist=abcdefghijklmnopqrstuvwyxyz12345678910!@#$%^&*()").text.replace("<br>", "\n")
     embed = discord.Embed(title=f"**Password Generated!**", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
@@ -531,7 +499,7 @@ async def ips(ctx):
 @client.command()
 async def webss(ctx, URL):
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/createscreenshot?key=MZFG2-EOVK4-TCAB0-4UXP9&url={URL}").text
+    r = requests.get(f"https://api.c99.nl/createscreenshot?key=&url={URL}").text
     embed=discord.Embed(title=f" **{URL} Screenshot** ", description=f"{r}", color=0xbf00ff)
     await ctx.send(embed=embed,delete_after=10)
 
