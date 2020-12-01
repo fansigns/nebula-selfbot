@@ -8,7 +8,7 @@
 #### Requirments
 - python 3.8.5 64 bit
 - pip install -r requirements.txt
-- c99 api key ($10)
+- c99 api key ($5 per month)
 
 
 
