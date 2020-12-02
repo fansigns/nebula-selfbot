@@ -10,5 +10,10 @@
 - pip install -r requirements.txt
 - c99 api key ($5 per month)
 
+#### Credits
+- Vi (base)
+- Vortex (ui)
+- c99 (api)
+
 
 
