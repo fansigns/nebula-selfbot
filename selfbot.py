@@ -21,7 +21,6 @@ client.remove_command('help')
 username = getpass.getuser()
 hostname = socket.gethostname()
 OS = platform.platform()
-token = asyncio.get_event_loop().run_until_complete(getToken())
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
 
