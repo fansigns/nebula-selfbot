@@ -17,16 +17,6 @@ client = commands.Bot(
     self_bot=True
 )
 client.remove_command('help') 
-
-
-async def getToken():
-	async with aiohttp.ClientSession() as session:
-		async with session.ws_connect('ws://127.0.0.1:6463/?v=1&encoding=json', headers={'origin': 'https://discord.com'}, max_msg_size=0) as discordWS:
-			await discordWS.send_str(json.dumps({'cmd': 'SUBSCRIBE', 'args': {}, 'evt': 'OVERLAY', 'nonce': 1}))
-			await discordWS.send_str(json.dumps({'cmd': 'OVERLAY', 'args': {'type': 'CONNECT', 'pid': 0}, 'nonce': 1}))
-			async for message in discordWS:
-				try: return message.json()['data']['payloads'][0]['token']
-				except: continue
                 
 username = getpass.getuser()
 hostname = socket.gethostname()
@@ -40,6 +30,7 @@ with open('config.json') as f:
 title = config.get('title')
 footer = config.get('footer')
 author = config.get('author')
+token = config.get('token')
 
 
 done = False
