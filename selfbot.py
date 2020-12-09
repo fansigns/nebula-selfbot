@@ -62,7 +62,7 @@ def banner():
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
     Servers = len(client.guilds)    
-    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Verison 1.0 | Connected as: {client.user.name}#{client.user.discriminator}')
+    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.1 | Connected as: {client.user.name}#{client.user.discriminator}')
     os.system('cls')
     Servers = len(client.guilds)
     friends = len(client.user.friends)
@@ -112,13 +112,17 @@ def loading():
     ''')
     time.sleep(0.3)
 
+mem = psutil.virtual_memory()
+cpu_per = round(psutil.cpu_percent(),1)
+mem_per = round(psutil.virtual_memory().percent,1)
+
 @client.event
 async def on_connect():
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
     Servers = len(client.guilds)    
-    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Verison 1.0 | Connected')
+    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.1 | Connected')
     os.system('cls')
     Servers = len(client.guilds)
     friends = len(client.user.friends)
@@ -132,7 +136,7 @@ async def on_connect():
 {w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   .        ..    *    .      *  .  ..  *    .        ..    *    .      *  .  ..  *         *   *    .  *      .        .  *   .
 
-                               {r}Nebula Loaded{w}!                             {r}  charge{w}#{r}1993
+                               {r}Nebula Loaded{w}!                             {r}  Version{w} {r}2.1.
                              {w}═════════════════════════════════════════════════════════════
   
                                   {r}███{w}╗{r}   ██{w}╗{r}███████{w}╗{r}██████{w}╗ {r}██{w}╗   {r}██{w}╗{r}██{w}╗      {r}█████{w}╗ 
@@ -153,6 +157,14 @@ async def on_connect():
 async def on_message_edit(before, after):
     await client.process_commands(after)
 
+
+@client.command()
+async def usage(ctx):
+    await ctx.message.delete()
+    embed=discord.Embed(title=f"*Nebula's Usage*", description=f"```diff\nMemory - {mem_per}```\n```CPU - {cpu_per}\n```", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed.set_footer(text=f'{footer} ')
+    await ctx.send(embed=embed,delete_after=10)
+    
 @client.command()
 async def help(ctx):
     await ctx.message.delete() 
