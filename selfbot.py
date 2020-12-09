@@ -242,7 +242,35 @@ async def invitespoof(ctx, link1, link2):
     await ctx.message.delete()
     await ctx.send (f"{link1}||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||||||||||{link2}")
 
+@client.command()
+async def dmall(ctx, *, dmall):
+    await ctx.message.delete()
+    embed=discord.Embed(title=f" **Attempting to DM {ctx.guild.member_count} users** ", description=f"With the message of **{dmall}**", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed.set_footer(text=f'{footer} ')
+    await ctx.send(embed=embed,delete_after=10)
+    for user in ctx.guild.members:
+        try:
+                await user.send(dmall)
+                await asyncio.sleep(3)
+        except:
+                print(f"[{Fore.MAGENTA}!{Fore.WHITE}]{Fore.MAGENTA} Error messaging {Fore.WHITE}{Fore.MAGENTA}[{Fore.WHITE}{user.name}{Fore.MAGENTA}]")
 
+@client.command()
+async def nuke(ctx, channel):
+    channel_id = int(''.join(i for i in channel if i.isdigit())) 
+    existing_channel = client.get_channel(channel_id)
+    if existing_channel is not None:
+        await existing_channel.clone(reason="nuked by nebula")
+        await existing_channel.delete()
+        embed=discord.Embed(title=f"**Nuked!** ", description=f"This channel was nuked by {client.user}", color=0xbf00ff, timestamp=ctx.message.created_at)
+        embed.set_footer(text=f'{footer}')
+        await ctx.send(embed=embed,delete_after=10)
+    else:
+        embed=discord.Embed(title=f"**Invalid Channel** ", description=f"", color=0xbf00ff, timestamp=ctx.message.created_at)
+        embed.set_footer(text=f'{footer} ')
+        await ctx.send(embed=embed,delete_after=10)
+    
+    
 @client.command()
 async def locate(ctx, ip: str):
     await ctx.message.delete()   
