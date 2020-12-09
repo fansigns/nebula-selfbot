@@ -270,30 +270,7 @@ async def nuke(ctx, channel):
         embed.set_footer(text=f'{footer} ')
         await ctx.send(embed=embed,delete_after=10)
     
-    
-@client.command()
-async def locate(ctx, ip: str):
-    await ctx.message.delete()   
-    r = requests.get(url=f"http://ip-api.com/json/{ip}")
-    hostname = requests.get(f"https://api.c99.nl/gethostname?key=&host={ip}").text.replace("<br>", "\n")
-    vpn = requests.get(f"https://api.c99.nl/proxydetector?key=&ip={ip}").text.replace("<br>", "\n")
-    if r.status_code == 200:
-        if(r.json()['status'] == "fail"):
-            await ctx.send(f"{ip} is an **invalid** IP Address")
-        else:
-            flag = f":flag_{r.json()['countryCode'].lower()}:"
-            embed = discord.Embed(title=f"**{ip}** lookup!", description=ip,color=0xbf00ff, timestamp=ctx.message.created_at)
-            embed.add_field(name="Country", value=f"{flag} {r.json()['country']}", inline=True)
-            embed.add_field(name="Region", value=f"{r.json()['region']} / {r.json()['regionName']}", inline=True)
-            embed.add_field(name="City", value=f"{r.json()['city']}", inline=True)
-            embed.add_field(name="ZIP", value=f"{r.json()['zip']}", inline=True)
-            embed.add_field(name="Lat/Long", value=f"{r.json()['lat']}/{r.json()['lon']}", inline=True)
-            embed.add_field(name="ISP", value=f"{r.json()['isp']}", inline=True)
-            embed.add_field(name="Org", value=f"{r.json()['org']}", inline=True)
-            embed.add_field(name="Hostname", value=f"{hostname}", inline=True)
-            embed.add_field(name="VPN?", value=f"{vpn}", inline=True)
-            embed.set_footer(text=f'{footer} ')
-            await ctx.send(embed=embed,delete_after=10)
+
 
 
 @client.command()
