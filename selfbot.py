@@ -132,7 +132,6 @@ mem_per = round(psutil.virtual_memory().percent,1)
 
 @client.event
 async def on_connect():
-    log()
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
