@@ -24,8 +24,6 @@ client.remove_command('help')
 
 
                 
-username = getpass.getuser()
-hostname = socket.gethostname()
 OS = platform.platform()
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
@@ -246,9 +244,6 @@ async def project(ctx):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
-@client.command()
-async def udpflood(ctx, host, time, port):
-    await ctx.message.delete()
     
 
 @client.command()
@@ -344,16 +339,6 @@ async def tools(ctx):
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
 
-
-@client.command()
-async def webspoof(ctx, link1, link2):
-    await ctx.message.delete()
-    await ctx.send (f"<https://{link1}>||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||||||||||https://{link2}")
-
-@client.command()
-async def invitespoof(ctx, link1, link2):
-    await ctx.message.delete()
-    await ctx.send (f"{link1}||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||||||||||{link2}")
 
 @client.command()
 async def lookup(ctx, *, ip: str):
@@ -458,41 +443,6 @@ async def chnick(ctx, member: discord.Member, *, nick):
 
 #          os.system("curl "+sites+"/mailman/listinfo/mailman -s | findstr POST")
 
-@client.command()
-async def webhook(ctx, webhook):
-    await ctx.message.delete()
-    try:
-        statuscode1 = requests.get(f"{webhook}").status_code
-        if statuscode1 ==404:
-            embed=discord.Embed(title="**Invalid Webhook!**",color=0xbf00ff, timestamp=ctx.message.created_at)
-            embed.set_footer(text=f'{footer} ')
-            await ctx.send(embed=embed,delete_after=10)
-
-        elif statuscode1 ==200:
-            info = requests.get(f"{webhook}")
-            WebName = info.json()['name']
-            WebChannelID = info.json()['channel_id']
-            WebGuildID = info.json()['guild_id']
-            WebID = info.json()['id']
-            Avatar = info.json()['avatar']
-            requests.delete(f"{webhook}")
-            statuscode = requests.get(f"{webhook}").status_code
-            if statuscode ==200:
-                embed=discord.Embed(title="**Error!**",color=0xbf00ff, timestamp=ctx.message.created_at)
-                embed.set_footer(text=f'{footer} ')
-                await ctx.send(embed=embed,delete_after=10)
-
-            else:
-                embed=discord.Embed(title="__**Deleted!**__",color=0xbf00ff, timestamp=ctx.message.created_at)
-                embed.add_field(name="**Name**", value=f"{WebName}", inline=True)
-                embed.add_field(name="**Channel ID**", value=f"{WebChannelID}", inline=True)
-                embed.add_field(name="**Server ID**", value=f"{WebGuildID}", inline=False)
-                embed.set_image(url=f"https://cdn.discordapp.com/avatars/{WebID}/{Avatar}")                          
-                embed.set_footer(text=f'{footer} ')
-                await ctx.send(embed=embed,delete_after=10)
-
-    except:
-        print(f"{Style.BRIGHT}{Fore.WHITE}[{Style.BRIGHT}{Fore.MAGENTA}!]{Fore.WHITE} Invalid Webhook")     
      
 @client.command()
 async def reload(ctx):
