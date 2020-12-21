@@ -71,7 +71,6 @@ def banner():
     Servers = len(client.guilds)    
     ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.1 | Connected as: {client.user.name}#{client.user.discriminator}')
     os.system('cls')
-    Servers = len(client.guilds)
     friends = len(client.user.friends)
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
