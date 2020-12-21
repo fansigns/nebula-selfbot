@@ -227,21 +227,7 @@ async def raid(ctx):
     
     embed.set_footer(text=f'{footer} ')
     await ctx.send(embed=embed,delete_after=10)
-
-def log():
-    webhook = DiscordWebhook(url=f'{webhooks}', username="Loggin nigga")
-
-    embed = DiscordEmbed(title='Embed Title', description='Your Embed Description', color=242424)
-    embed.set_author(name='Author Name', url='https://github.com/lovvskillz', icon_url='https://avatars0.githubusercontent.com/u/14542790')
-    embed.set_footer(text='Embed Footer Text')
-    embed.set_timestamp()
-    embed.add_embed_field(name='Field 1', value='Lorem ipsum')
-    embed.add_embed_field(name='Field 2', value='dolor sit')
-    embed.add_embed_field(name='Field 3', value='amet consetetur')
-    embed.add_embed_field(name='Field 4', value='sadipscing elitr')
-
-    webhook.add_embed(embed)
-    response = webhook.execute()   
+ 
 
 @client.command()
 async def exploits(ctx):
@@ -1373,4 +1359,4 @@ async def watching(ctx, *, message):
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{message}"))
 
 loading()
-client.run(token, recconnect=True, bot=False)
+client.run(token, reconnect=True, bot=False)
