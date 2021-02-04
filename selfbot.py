@@ -71,11 +71,11 @@ def banner():
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
-    Servers = len(nebula.guilds)    
+    Servers = len(client.guilds)    
     ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.2 | Connected as: {nebula.user.name}#{nebula.user.discriminator}')
     os.system('cls')
-    Servers = len(nebula.guilds)
-    friends = len(nebula.user.friends)
+    Servers = len(client.guilds)
+    friends = len(client.user.friends)
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
     print(f'''
@@ -92,7 +92,7 @@ def banner():
                                         {r}║║║║╣ ╠╩╗║ ║║  ╠═╣  ╚═╗║╣ ║  ╠╣ ╠╩╗║ ║ ║ 
                                         {r}╝╚╝╚═╝╚═╝╚═╝╩═╝╩ ╩  ╚═╝╚═╝╩═╝╚  ╚═╝╚═╝ ╩
      
-                                                      {r}User:    {w}[{r}{nebula.user.name}{w}#{r}{nebula.user.discriminator}{w}] 
+                                                      {r}User:    {w}[{r}{client.user.name}{w}#{r}{client.user.discriminator}{w}] 
                                                       {r}Guilds:  {w}[{r}{Servers}{w}]
                                                       {r}Friends: {w}[{r}{friends}{w}]
                                   {w}═════════════════════════════════════════════════════════════
@@ -171,11 +171,11 @@ async def on_connect():
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
-    Servers = len(nebula.guilds)    
+    Servers = len(client.guilds)    
     ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.1 | Connected')
     os.system('cls')
-    Servers = len(nebula.guilds)
-    friends = len(nebula.user.friends)
+    Servers = len(client.guilds)
+    friends = len(client.user.friends)
     Clear()
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
@@ -193,7 +193,7 @@ async def on_connect():
                                         {r}║║║║╣ ╠╩╗║ ║║  ╠═╣  ╚═╗║╣ ║  ╠╣ ╠╩╗║ ║ ║ 
                                         {r}╝╚╝╚═╝╚═╝╚═╝╩═╝╩ ╩  ╚═╝╚═╝╩═╝╚  ╚═╝╚═╝ ╩
   
-                                                 {r}User:    {w}[{r}{nebula.user.name}{w}#{r}{nebula.user.discriminator}{w}] 
+                                                 {r}User:    {w}[{r}{client.user.name}{w}#{r}{client.user.discriminator}{w}] 
                                                  {r}Guilds:  {w}[{r}{Servers}{w}]
                                                  {r}Friends: {w}[{r}{friends}{w}]
                              {w}═════════════════════════════════════════════════════════════
