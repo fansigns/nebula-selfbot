@@ -202,7 +202,7 @@ async def on_connect():
 
 @client.event
 async def on_message_edit(before, after):
-    await nebula.process_commands(after)
+    await client.process_commands(after)
 
 
 
