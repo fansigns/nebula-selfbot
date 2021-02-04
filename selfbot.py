@@ -130,7 +130,7 @@ mem = psutil.virtual_memory()
 cpu_per = round(psutil.cpu_percent(),1)
 mem_per = round(psutil.virtual_memory().percent,1)
 
-@nebula.command()	
+@client.command()	
 async def webhook(ctx, webhook):	
     await ctx.message.delete()	
     try:	
@@ -166,7 +166,7 @@ async def webhook(ctx, webhook):
     except:	
         print(f"{Style.BRIGHT}{Fore.WHITE}[{Style.BRIGHT}{Fore.MAGENTA}!]{Fore.WHITE} Invalid Webhook")     
 
-@nebula.event
+@client.event
 async def on_connect():
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
@@ -200,7 +200,7 @@ async def on_connect():
                                                    
 '''+Fore.RESET)
 
-@nebula.event
+@client.event
 async def on_message_edit(before, after):
     await nebula.process_commands(after)
 
