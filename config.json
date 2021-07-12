@@ -1,7 +1,6 @@
 {
-    "title": "charges new selfbot",
-    "author": "charge",
+    "title": "",
+    "author": "",
     "footer": "Nebula - Selfbot",
-    "token": "TOKEN HERE"
-    
+    "delete_sec": 10    
 }
